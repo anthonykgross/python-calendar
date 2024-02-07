@@ -27,6 +27,7 @@ jobs:
         python3 -m unittest discover .
 
   publishing:
+    needs: [ testing ]
     runs-on: ubuntu-latest
     environment:
       name: pypi
