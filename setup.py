@@ -11,7 +11,7 @@ install_requires = [str(ir) for ir in parse_requirements(path.open())]
 
 setuptools.setup(
     name="python-calendar",
-    version='0.0.2',
+    version='1.0.0',
     author="Anthony K GROSS",
     author_email="anthony.k.gross@gmail.com",
     description="",

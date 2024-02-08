@@ -68,19 +68,19 @@ class TestCalendar(unittest.TestCase):
 
         self.assertEqual(calendar.years, [2023, 2024])
         self.assertEqual(list(calendar.months.keys()), [
-            '8-2023',
-            '9-2023',
-            '10-2023',
-            '11-2023',
-            '12-2023',
-            '1-2024',
-            '2-2024',
-            '3-2024',
-            '4-2024',
-            '5-2024',
-            '6-2024',
-            '7-2024',
-            '8-2024'
+            '2023-08',
+            '2023-09',
+            '2023-10',
+            '2023-11',
+            '2023-12',
+            '2024-01',
+            '2024-02',
+            '2024-03',
+            '2024-04',
+            '2024-05',
+            '2024-06',
+            '2024-07',
+            '2024-08'
         ])
 
         date_from = parse('2023-12-23')
@@ -89,19 +89,19 @@ class TestCalendar(unittest.TestCase):
 
         self.assertEqual(calendar.years, [2023, 2024])
         self.assertEqual(list(calendar.months.keys()), [
-            '12-2023',
-            '1-2024',
+            '2023-12',
+            '2024-01',
         ])
-        self.assertEqual(calendar.months['12-2023'][0], 12)
-        self.assertEqual(calendar.months['12-2023'][1], 2023)
+        self.assertEqual(calendar.months['2023-12'].number, 12)
+        self.assertEqual(calendar.months['2023-12'].year, 2023)
 
         self.assertEqual(list(calendar.weeks.keys()), [
-            '51-2023',
-            '52-2023',
-            '1-2024'
+            '2023-W51',
+            '2023-W52',
+            '2024-W01'
         ])
-        self.assertEqual(calendar.weeks['51-2023'][0], 51)
-        self.assertEqual(calendar.weeks['51-2023'][1], 2023)
+        self.assertEqual(calendar.weeks['2023-W51'].number, 51)
+        self.assertEqual(calendar.weeks['2023-W51'].year, 2023)
 
         self.assertEqual(list(calendar.days.keys()), [
             '2023-12-23',
@@ -116,4 +116,4 @@ class TestCalendar(unittest.TestCase):
             '2024-01-01',
             '2024-01-02'
         ])
-        self.assertEqual(calendar.days['2023-12-23'], datetime(2023, 12, 23, 0, 0))
+        self.assertEqual(calendar.days['2023-12-23'].date, datetime(2023, 12, 23, 0, 0))
