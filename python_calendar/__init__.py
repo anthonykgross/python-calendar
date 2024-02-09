@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
@@ -8,78 +9,123 @@ class Day:
     def __init__(self, date):
         self.date = date
 
+    @property
+    def week(self):
+        return self.date.isocalendar()[1]
+
+    @property
+    def day(self):
+        return self.date.day
+
+    @property
+    def month(self):
+        return self.date.month
+
+    @property
+    def year(self):
+        return self.date.year
+
     @staticmethod
-    def get_key(date):
-        return date.strftime('%Y-%m-%d')
+    def get_key(day):
+        return day.date.strftime(Day.key)
 
 
 class Week:
     key = '%s-W%s'
 
-    def __init__(self, date):
-        self.number = date.isocalendar()[1]
-        self.year = date.isocalendar()[0]
+    def __init__(self, day):
+        self.number = day.week
+        self.year = day.year
+        self.days = []
 
     @staticmethod
-    def get_key(date):
+    def get_key(day):
         return Week.key % (
-            date.isocalendar()[0],
-            str(date.isocalendar()[1]).zfill(2)
+            day.year,
+            str(day.week).zfill(2)
         )
 
 
 class Month:
     key = '%s-%s'
 
-    def __init__(self, date):
-        self.number = date.month
-        self.year = date.year
+    def __init__(self, day):
+        self.number = day.month
+        self.year = day.year
+        self.days = []
 
     @staticmethod
-    def get_key(date):
+    def get_key(day):
         return Month.key % (
-            date.year,
-            str(date.month).zfill(2)
+            day.year,
+            str(day.month).zfill(2)
+        )
+
+
+class Year:
+    key = '%s'
+
+    def __init__(self, day):
+        self.days = []
+
+    @staticmethod
+    def get_key(day):
+        return Year.key % (
+            day.year
         )
 
 
 class Calendar:
     def __init__(self):
-        self.days = {}
-        self.weeks = {}
-        self.months = {}
-        self.years = []
+        self.nodes = {}
 
-    def __add_year(self, date):
-        if date.year not in self.years:
-            self.years.append(date.year)
+    @property
+    def days(self):
+        return self.__get("^\d{4}-\d{2}-\d{2}$")
 
-    def __add_week(self, date):
-        key = Week.get_key(date)
+    @property
+    def weeks(self):
+        return self.__get("^\d{4}-W\d{2}$")
 
-        if key not in self.weeks.keys():
-            self.weeks[key] = Week(date)
+    @property
+    def months(self):
+        return self.__get("^\d{4}-\d{2}$")
 
-    def __add_month(self, date):
-        key = Month.get_key(date)
+    @property
+    def years(self):
+        return self.__get("^\d{4}$")
 
-        if key not in self.months.keys():
-            self.months[key] = Month(date)
+    def __get(self, regexp):
+        result = []
+        for key in self.nodes.keys():
+            s = re.search(regexp, key)
+            if s:
+                result.append(s.group())
+        return result
 
-    def __add_day(self, date):
-        key = Day.get_key(date)
+    def __add(self, day, t):
+        if not isinstance(day, Day):
+            raise Exception('`day` must be a instance of Day')
 
-        if key not in self.days.keys():
-            self.days[key] = Day(date)
+        key = t.get_key(day)
+        if key not in self.nodes:
+            node = day
+            if t != Day:
+                node = t(day)
+            self.nodes[key] = node
+
+        node = self.nodes[key]
+        if not isinstance(node, Day):
+            node.days.append(day)
 
     def add(self, date):
         if not isinstance(date, datetime):
             raise Exception('`date` must be a instance of datetime')
-
-        self.__add_year(date)
-        self.__add_week(date)
-        self.__add_month(date)
-        self.__add_day(date)
+        day = Day(date)
+        self.__add(day, Year)
+        self.__add(day, Week)
+        self.__add(day, Month)
+        self.__add(day, Day)
 
     @staticmethod
     def get(date_from, date_to):
