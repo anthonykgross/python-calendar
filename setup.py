@@ -3,6 +3,8 @@ from pathlib import Path
 import setuptools
 from pkg_resources import parse_requirements
 
+import python_calendar
+
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
@@ -11,13 +13,13 @@ install_requires = [str(ir) for ir in parse_requirements(path.open())]
 
 setuptools.setup(
     name="python-calendar",
-    version='1.0.0',
+    version=python_calendar.get_version(),
     author="Anthony K GROSS",
     author_email="anthony.k.gross@gmail.com",
     description="",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/anthonykgross/python-calendar",
+    url="https://anthonykgross.fr/python-calendar/",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -27,4 +29,8 @@ setuptools.setup(
     python_requires='>=3.8',
     include_package_data=True,
     install_requires=install_requires,
+    project_urls={
+        'Documentation': 'https://anthonykgross.fr/python-calendar/',
+        'Source': 'https://github.com/anthonykgross/python-calendar/',
+    }
 )
