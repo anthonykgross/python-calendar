@@ -19,8 +19,8 @@ class Day:
     :param week: Number of the week
     :type week: int
 
-    :param day: Number of the day in the month
-    :type day: int
+    :param number: Number of the day in the month
+    :type number: int
 
     :param month: Number of the month
     :type month: int
@@ -35,8 +35,11 @@ class Day:
         Create a :class:`~python_calendar.Day` based on :class:`~datetime.datetime`
 
         :param date: The date to analyze
-        :type date: datetime
+        :type date: Day | datetime
         """
+        if isinstance(date, Day):
+            date = date.date
+
         if not isinstance(date, datetime):
             raise Exception('`date` must be an instance of `datetime`')
         self.date = date
@@ -46,7 +49,7 @@ class Day:
         return self.date.isocalendar()[1]
 
     @property
-    def day(self):
+    def number(self):
         return self.date.day
 
     @property
@@ -63,6 +66,18 @@ class Day:
 
 
 class Week:
+    """
+
+    :param number: The week number
+    :type number: int
+
+    :param year: The year
+    :type year: int
+
+    :param days: List of days
+    :type days: Day[]
+    """
+
     key = '%s-W%s'
 
     def __init__(self, day):
@@ -70,7 +85,7 @@ class Week:
         Create a :class:`~python_calendar.Week` based on :class:`~python_calendar.Day`
 
         :param day: The day to analyze
-        :type day: Day
+        :type day: Day | datetime
         """
         if isinstance(day, datetime):
             day = Day(day)
@@ -88,6 +103,18 @@ class Week:
 
 
 class Month:
+    """
+
+    :param number: The month number
+    :type number: int
+
+    :param year: The year
+    :type year: int
+
+    :param days: List of days
+    :type days: Day[]
+    """
+
     key = '%s-%s'
 
     def __init__(self, day):
@@ -95,7 +122,7 @@ class Month:
         Create a :class:`~python_calendar.Month` based on :class:`~python_calendar.Day`
 
         :param day: The day to analyze
-        :type day: Day
+        :type day: Day | datetime
         """
         if isinstance(day, datetime):
             day = Day(day)
@@ -113,6 +140,14 @@ class Month:
 
 
 class Year:
+    """
+    :param number: The year number
+    :type number: int
+
+    :param days: List of days
+    :type days: Day[]
+    """
+
     key = '%s'
 
     def __init__(self, day):
@@ -120,9 +155,13 @@ class Year:
         Create a :class:`~python_calendar.Year` based on :class:`~python_calendar.Day`
 
         :param day: The day to analyze
-        :type day: Day
+        :type day: Day | datetime
         """
+        if isinstance(day, datetime):
+            day = Day(day)
+
         self.days = []
+        self.number = day.year
 
     @staticmethod
     def get_key(day):
@@ -149,6 +188,7 @@ class Calendar:
     :param years: List of Year
     :type years: Year[]
     """
+
     def __init__(self):
         self.nodes = {}
 
