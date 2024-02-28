@@ -1,3 +1,4 @@
+import math
 import re
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -36,6 +37,8 @@ class Day:
         :param date: The date to analyze
         :type date: datetime
         """
+        if not isinstance(date, datetime):
+            raise Exception('`date` must be an instance of `datetime`')
         self.date = date
 
     @property
@@ -69,6 +72,9 @@ class Week:
         :param day: The day to analyze
         :type day: Day
         """
+        if isinstance(day, datetime):
+            day = Day(day)
+
         self.number = day.week
         self.year = day.year
         self.days = []
@@ -91,6 +97,9 @@ class Month:
         :param day: The day to analyze
         :type day: Day
         """
+        if isinstance(day, datetime):
+            day = Day(day)
+
         self.number = day.month
         self.year = day.year
         self.days = []
@@ -197,8 +206,18 @@ class Calendar:
         self.__add(day, Month)
         self.__add(day, Day)
 
+    @property
+    def first_day(self):
+        if len(self.days) > 0:
+            return self.days[0]
+
+    @property
+    def last_day(self):
+        if len(self.days) > 0:
+            return self.days[-1]
+
     @staticmethod
-    def get(date_from, date_to):
+    def get(date_from, date_to, **kwargs):
         """
         Create a :class:`~python_calendar.Calendar` based on 2 :class:`~datetime`
 
@@ -208,6 +227,9 @@ class Calendar:
         :param date_to: The last date to analyze
         :type date_to: datetime
 
+        :param incl_last_day: **Default**: ``True``. Set ``False`` if you want to skip the last day
+        :type incl_last_day: boolean
+
         :returns: Calendar
         """
         if not isinstance(date_from, datetime):
@@ -215,10 +237,16 @@ class Calendar:
         if not isinstance(date_to, datetime):
             raise Exception('`date_to` must be a instance of datetime')
 
+        incl_last_day = kwargs.get('incl_last_day', True)
+
         d = date_to - date_from
+        nb_days = math.ceil(d.total_seconds() / 60 / 60 / 24)
+
+        if nb_days == d.days and incl_last_day:
+            nb_days += 1
 
         calendar = Calendar()
-        for i in range(0, d.days):
-            t = date_from + relativedelta(days=+i)
+        for i in range(0, nb_days):
+            t = date_from + relativedelta(days=i)
             calendar.add(t)
         return calendar
